@@ -47,7 +47,7 @@ runs:
       shell: bash
       run: |
         .github/actions/build-push/build-push.sh \
-          --platform "${{ inputs.platform }}" \\
+          --platform "${{ inputs.platform }}" \
           --dry-run "${{ inputs.dry_run }}"
 
     - name: Outputs
