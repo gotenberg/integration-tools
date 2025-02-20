@@ -1,4 +1,4 @@
-# PDF Tools
+# Integration Tools
 
 > [!NOTE]  
 > This image provides integration testing tools for Gotenberg.
