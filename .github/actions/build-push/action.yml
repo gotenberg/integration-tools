@@ -1,0 +1,56 @@
+name: Build and Push
+description: Build and push Docker images
+author: Julien Neuhart
+
+inputs:
+  github_token:
+    description: The GitHub token
+    required: true
+    default: ${{ github.token }}
+  docker_hub_username:
+    description: The Docker Hub username
+    required: true
+  docker_hub_password:
+    description: The Docker Hub password
+    required: true
+  platform:
+    description: linux/amd64, linux/386, linux/arm64, linux/arm/v7
+    required: true
+  dry_run:
+    description: Dry run this action
+
+outputs:
+  tag:
+    description: Generated tag
+    value: ${{ steps.build_push.outputs.tag }}
+
+runs:
+  using: composite
+  steps:
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Check out code
+      uses: actions/checkout@v4
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ inputs.docker_hub_username }}
+        password: ${{ inputs.docker_hub_password }}
+
+    - name: Build and push ${{ inputs.platform }}
+      id: build_push
+      shell: bash
+      run: |
+        .github/actions/build-push/build-push.sh \
+          --platform "${{ inputs.platform }}" \\
+          --dry-run "${{ inputs.dry_run }}"
+
+    - name: Outputs
+      shell: bash
+      run: |
+        echo "tags=${{ steps.build_push.outputs.tags }}"

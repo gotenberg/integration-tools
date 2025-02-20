@@ -1,0 +1,105 @@
+name: Continuous Delivery
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release_amd64:
+    name: Release linux/amd64
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.build_push.outputs.tag }}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Build and push
+        id: build_push
+        uses: ./.github/actions/build-push
+        with:
+          docker_hub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+          docker_hub_password: ${{ secrets.DOCKERHUB_TOKEN }}
+          platform: linux/amd64
+
+  release_386:
+    name: Release linux/386
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.build_push.outputs.tag }}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Build and push
+        id: build_push
+        uses: ./.github/actions/build-push
+        with:
+          docker_hub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+          docker_hub_password: ${{ secrets.DOCKERHUB_TOKEN }}
+          platform: linux/386
+
+  release_arm64:
+    name: Release linux/arm64
+    runs-on: ubuntu-24.04-arm
+    outputs:
+      tag: ${{ steps.build_push.outputs.tag }}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Build and push
+        id: build_push
+        uses: ./.github/actions/build-push
+        with:
+          docker_hub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+          docker_hub_password: ${{ secrets.DOCKERHUB_TOKEN }}
+          platform: linux/arm64
+
+  release_arm_v7:
+    name: Release linux/arm/v7
+    runs-on: ubuntu-24.04-arm
+    outputs:
+      tag: ${{ steps.build_push.outputs.tag }}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Build and push
+        id: build_push
+        uses: ./.github/actions/build-push
+        with:
+          docker_hub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+          docker_hub_password: ${{ secrets.DOCKERHUB_TOKEN }}
+          platform: linux/arm/v7
+
+  merge_clean_release_tags:
+    needs:
+      - release_amd64
+      - release_386
+      - release_arm64
+      - release_arm_v7
+    name: Merge and clean release tags
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Merge
+        uses: ./.github/actions/merge
+        with:
+          docker_hub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+          docker_hub_password: ${{ secrets.DOCKERHUB_TOKEN }}
+          tags: "${{ needs.release_amd64.outputs.tag }},${{ needs.release_386.outputs.tag }},${{ needs.release_arm64.outputs.tag }},${{ needs.release_arm_v7.outputs.tag }}"
+
+      - name: Clean
+        uses: ./.github/actions/clean
+        with:
+          docker_hub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+          docker_hub_password: ${{ secrets.DOCKERHUB_TOKEN }}
+          tags: "${{ needs.release_amd64.outputs.tag }},${{ needs.release_386.outputs.tag }},${{ needs.release_arm64.outputs.tag }},${{ needs.release_arm_v7.outputs.tag }}"
