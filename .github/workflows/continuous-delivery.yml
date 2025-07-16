@@ -26,6 +26,23 @@ jobs:
           docker_hub_username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker_hub_password: ${{ secrets.DOCKERHUB_TOKEN }}
           platform: linux/amd64
+  
+  release_ppc64le:
+    name: Release linux/ppc64le
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.build_push.outputs.tag }}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Build and push
+        id: build_push
+        uses: ./.github/actions/build-push
+        with:
+          docker_hub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+          docker_hub_password: ${{ secrets.DOCKERHUB_TOKEN }}
+          platform: linux/ppc64le
 
   release_386:
     name: Release linux/386
@@ -81,6 +98,7 @@ jobs:
   merge_clean_release_tags:
     needs:
       - release_amd64
+      - release_ppc64le
       - release_386
       - release_arm64
       - release_arm_v7
@@ -95,11 +113,11 @@ jobs:
         with:
           docker_hub_username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker_hub_password: ${{ secrets.DOCKERHUB_TOKEN }}
-          tags: "${{ needs.release_amd64.outputs.tag }},${{ needs.release_386.outputs.tag }},${{ needs.release_arm64.outputs.tag }},${{ needs.release_arm_v7.outputs.tag }}"
+          tags: "${{ needs.release_amd64.outputs.tag }},${{ needs.release_ppc64le.outputs.tag }},${{ needs.release_386.outputs.tag }},${{ needs.release_arm64.outputs.tag }},${{ needs.release_arm_v7.outputs.tag }}"
 
       - name: Clean
         uses: ./.github/actions/clean
         with:
           docker_hub_username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker_hub_password: ${{ secrets.DOCKERHUB_TOKEN }}
-          tags: "${{ needs.release_amd64.outputs.tag }},${{ needs.release_386.outputs.tag }},${{ needs.release_arm64.outputs.tag }},${{ needs.release_arm_v7.outputs.tag }}"
+          tags: "${{ needs.release_amd64.outputs.tag }},${{ needs.release_ppc64le.outputs.tag }},${{ needs.release_386.outputs.tag }},${{ needs.release_arm64.outputs.tag }},${{ needs.release_arm_v7.outputs.tag }}"
