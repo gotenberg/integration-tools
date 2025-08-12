@@ -17,7 +17,7 @@ jobs:
       tag: ${{ steps.build_push.outputs.tag }}
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Build and push
         id: build_push
@@ -34,7 +34,7 @@ jobs:
       tag: ${{ steps.build_push.outputs.tag }}
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Build and push
         id: build_push
@@ -51,7 +51,7 @@ jobs:
       tag: ${{ steps.build_push.outputs.tag }}
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Build and push
         id: build_push
@@ -68,7 +68,7 @@ jobs:
       tag: ${{ steps.build_push.outputs.tag }}
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Build and push
         id: build_push
@@ -85,7 +85,7 @@ jobs:
       tag: ${{ steps.build_push.outputs.tag }}
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Build and push
         id: build_push
@@ -106,7 +106,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Merge
         uses: ./.github/actions/merge
