@@ -34,7 +34,7 @@ jobs:
       tag: ${{ steps.build_push.outputs.tag }}
     steps:
       - name: Checkout source code
-        uses:  vv
+        uses:  actions/checkout@v5
 
       - name: Build and push
         id: build_push
