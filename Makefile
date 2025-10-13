@@ -5,7 +5,7 @@ help: ## Show the help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: download-verapdf
-download-verapdf:
+download-verapdf: ## Download VeraPDF using the VERAPDF_VERSION value from the .env file
 	rm -rf verapdf
 	docker run -d --rm --name verapdf ghcr.io/verapdf/cli:$(VERAPDF_VERSION)
 	docker cp verapdf:/opt/verapdf/ verapdf
